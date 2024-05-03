@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../core/exceptions/exceptions.dart';
 import '../../../../core/resources/error_msg_res.dart';
@@ -18,7 +19,7 @@ class HomePageWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocListener<FoodRecipeSearchCubit, FoodRecipeSearchState>(
-      listener: (context, state) {
+      listener: (context, state) async {
         if (state is FoodRecipeSearchLoading) {
           Center(
             child: LoadingAnimationWidget.discreteCircle(
@@ -32,6 +33,15 @@ class HomePageWidget extends StatelessWidget {
           context
               .read<FoodRecipeSearchLogicCubit>()
               .updateFoodRecipeSearchResult(nItems);
+
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+
+          List<String>? listValue = prefs.getStringList('listKey');
+
+          // ignore: use_build_context_synchronously
+          context
+              .read<FoodRecipeSearchLogicCubit>()
+              .initialBookmark(listValue ?? []);
         } else if (state is FoodRecipeSearchFailed) {
           // Navigator.pop(context);
           final ex = state.exception;
@@ -94,6 +104,7 @@ class HomePageWidget extends StatelessWidget {
     return BlocBuilder<FoodRecipeSearchLogicCubit, FoodRecipeSearchLogicState>(
       builder: (context, state) {
         final items = state.results;
+        final bookmarkList = state.bookmarkList;
         if (items.isNotEmpty) {
           return ListView.separated(
             controller: ScrollController(),
@@ -131,23 +142,33 @@ class HomePageWidget extends StatelessWidget {
                       children: [
                         Container(
                           margin: const EdgeInsets.fromLTRB(12, 0, 12, 86),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: const Color(0xCCFFFFFF),
-                              borderRadius: BorderRadius.circular(6),
-                            ),
+                          child: GestureDetector(
+                            onTap: () {
+                              context
+                                  .read<FoodRecipeSearchLogicCubit>()
+                                  .changeBookmark(items[index].id!);
+                            },
                             child: Container(
-                              width: 32,
-                              height: 32,
-                              padding: const EdgeInsets.fromLTRB(9, 6, 9, 6),
-                              child: SizedBox(
-                                width: 14,
-                                height: 20,
+                              decoration: BoxDecoration(
+                                color: const Color(0xCCFFFFFF),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Container(
+                                width: 32,
+                                height: 32,
+                                padding: const EdgeInsets.fromLTRB(9, 6, 9, 6),
                                 child: SizedBox(
                                   width: 14,
                                   height: 20,
                                   child: SvgPicture.asset(
-                                    'assets/vectors/bookmark.svg',
+                                    bookmarkList?.isEmpty ?? true
+                                        ? 'assets/vectors/bookmark.svg'
+                                        : bookmarkList?.contains(items[index]
+                                                    .id
+                                                    .toString()) ??
+                                                true
+                                            ? 'assets/vectors/bookmarked.svg'
+                                            : 'assets/vectors/bookmark.svg',
                                   ),
                                 ),
                               ),

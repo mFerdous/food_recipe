@@ -6,12 +6,14 @@ class FoodRecipeSearchLogicState extends Equatable {
   final int? offset;
   final List<Result> results;
   final int selectedIndex;
+  final List<String>? bookmarkList;
 
   const FoodRecipeSearchLogicState({
     this.query,
     this.offset,
     required this.results,
     this.selectedIndex = 0,
+    this.bookmarkList,
   });
 
   FoodRecipeSearchLogicState copyWith({
@@ -19,12 +21,14 @@ class FoodRecipeSearchLogicState extends Equatable {
     final int? offset,
     final List<Result>? results,
     final int? selectedIndex,
+    final List<String>? bookmarkList,
   }) {
     return FoodRecipeSearchLogicState(
       query: query ?? this.query,
       offset: offset ?? this.offset,
       results: results ?? this.results,
       selectedIndex: selectedIndex ?? this.selectedIndex,
+      bookmarkList: bookmarkList ?? this.bookmarkList,
     );
   }
 
@@ -34,6 +38,7 @@ class FoodRecipeSearchLogicState extends Equatable {
         offset,
         results,
         selectedIndex,
+        bookmarkList,
       ];
 }
 
