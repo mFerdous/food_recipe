@@ -9,7 +9,7 @@ import '../core/utils/lang/app_localizations.dart';
 import 'common/presentation/cubit/locale/locale_cubit.dart';
 
 class App extends StatefulWidget {
-  const App({Key? key}) : super(key: key);
+  const App({super.key});
 
   @override
   State<App> createState() => _AppState();

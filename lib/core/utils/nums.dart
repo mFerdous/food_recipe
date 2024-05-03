@@ -1,4 +1,5 @@
-int page = 1;
+String query = '';
+int offset = 0;
 bool isConnected = true;
 
 enum SortingOption { byDateTime, byStarCount }

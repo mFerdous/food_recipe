@@ -21,7 +21,15 @@ class AuthHeaderProvider extends HeaderProviderImpl {
   @override
   Map<String, String> call() {
     return Map.from(super.call())
-      ..putIfAbsent(
-          "Authorization", () => "Bearer ${_tokenSource.getToken()}");
+      ..putIfAbsent("Authorization", () => "Bearer ${_tokenSource.getToken()}");
+  }
+}
+
+class AuthKeyHeaderProviderImpl implements HeaderProvider {
+  @override
+  Map<String, String> call() {
+    return {
+      "X-RapidAPI-Key": "1a2bd7d529msh513ba3b70195a79p1acf77jsned01ab52cffa",
+    };
   }
 }

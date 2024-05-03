@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../features/home/presentation/screens/home_page.dart';
+import '../../features/home/presentation/screens/home_screen.dart';
 import 'route_name.dart';
 
 class RouteConfig {
@@ -26,7 +26,7 @@ class RouteConfig {
   }
 
   static MaterialPageRoute _getInitialRoute() {
-    return _routeBuilder(const HomePage());
+    return _routeBuilder(const HomeScreen());
     // return _routeBuilder(const SplashScreen());
   }
 }
