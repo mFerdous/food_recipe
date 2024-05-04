@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -13,8 +16,37 @@ import '../../../common/presentation/widgets/app_text_field_with_icon.dart';
 import '../cubit/food_recipe_search_cubit.dart';
 import '../logic_cubit/food_recipe_search_logic_cubit.dart';
 
-class HomePageWidget extends StatelessWidget {
+class HomePageWidget extends StatefulWidget {
   const HomePageWidget({super.key});
+
+  @override
+  State<HomePageWidget> createState() => _HomePageWidgetState();
+}
+
+class _HomePageWidgetState extends State<HomePageWidget> {
+  final controller = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    controller.addListener(() {
+      log('call listener controller');
+      if (controller.position.maxScrollExtent == controller.offset) {
+        offset++;
+        fetch();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  Future<void> fetch() async {
+    context.read<FoodRecipeSearchLogicCubit>().getFoodRecipeSearch(context);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,12 +55,18 @@ class HomePageWidget extends StatelessWidget {
         if (state is FoodRecipeSearchLoading) {
           Center(
             child: LoadingAnimationWidget.discreteCircle(
-              color: Colors.white.withOpacity(0.25),
+              color: Colors.black.withOpacity(0.25),
               size: 50,
             ),
           );
         } else if (state is FoodRecipeSearchSucceed) {
           final nItems = state.model.results ?? [];
+
+          offset == 0 ?
+
+          context
+              .read<FoodRecipeSearchLogicCubit>()
+              .addFoodRecipeSearchResult(nItems):
 
           context
               .read<FoodRecipeSearchLogicCubit>()
@@ -107,7 +145,7 @@ class HomePageWidget extends StatelessWidget {
         final bookmarkList = state.bookmarkList;
         if (items.isNotEmpty) {
           return ListView.separated(
-            controller: ScrollController(),
+            controller: controller,
             padding: const EdgeInsets.symmetric(horizontal: 16),
             itemCount: items.length + 1,
             separatorBuilder: (context, index) => const SizedBox(
@@ -371,7 +409,11 @@ class HomePageWidget extends StatelessWidget {
             },
           );
         } else {
-          return const SizedBox();
+          return const SizedBox(
+            child: Center(
+              child: Text('No data found!'),
+            ),
+          );
         }
       },
     );

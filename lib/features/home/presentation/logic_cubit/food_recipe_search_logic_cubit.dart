@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../../core/utils/nums.dart';
 import '../../data/model/food_recipe_search_response.dart';
 import '../cubit/food_recipe_search_cubit.dart';
 
@@ -29,10 +30,19 @@ class FoodRecipeSearchLogicCubit extends Cubit<FoodRecipeSearchLogicState> {
 
   Future<void> getFoodRecipeSearch(context) async {
     await BlocProvider.of<FoodRecipeSearchCubit>(context)
-        .getFoodRecipeSearch(state.query ?? '', state.offset ?? 0);
+        .getFoodRecipeSearch(state.query ?? '', offset);
   }
 
-  void updateFoodRecipeSearchResult(List<Result> results) {
+  void addFoodRecipeSearchResult(List<Result> newResults) {
+    emit(state.copyWith(results: newResults));
+  }
+
+  void updateFoodRecipeSearchResult(List<Result> newResults) {
+    final results = List<Result>.from(state.results);
+
+    results.addAll(newResults);
+
+
     emit(state.copyWith(results: results));
   }
 

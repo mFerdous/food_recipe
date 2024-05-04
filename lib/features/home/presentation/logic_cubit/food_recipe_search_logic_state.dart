@@ -3,14 +3,14 @@ part of 'food_recipe_search_logic_cubit.dart';
 
 class FoodRecipeSearchLogicState extends Equatable {
   final String? query;
-  final int? offset;
+  // final int? offset;
   final List<Result> results;
   final int selectedIndex;
   final List<String>? bookmarkList;
 
   const FoodRecipeSearchLogicState({
     this.query,
-    this.offset,
+    // this.offset,
     required this.results,
     this.selectedIndex = 0,
     this.bookmarkList,
@@ -25,7 +25,7 @@ class FoodRecipeSearchLogicState extends Equatable {
   }) {
     return FoodRecipeSearchLogicState(
       query: query ?? this.query,
-      offset: offset ?? this.offset,
+      // offset: offset ?? this.offset,
       results: results ?? this.results,
       selectedIndex: selectedIndex ?? this.selectedIndex,
       bookmarkList: bookmarkList ?? this.bookmarkList,
@@ -35,7 +35,7 @@ class FoodRecipeSearchLogicState extends Equatable {
   @override
   List<Object?> get props => [
         query,
-        offset,
+        // offset,
         results,
         selectedIndex,
         bookmarkList,
