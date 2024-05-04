@@ -5,4 +5,5 @@ class RouteName {
 
   static const initialRoute = '/';
   static const homepageRoute = '/homepage';
+  static const recipeInformation = '/recipeInformation';
   }

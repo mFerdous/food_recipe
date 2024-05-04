@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:food_recipe/core/utils/nums.dart';
 
 import '../logic_cubit/food_recipe_search_logic_cubit.dart';
 import '../widgets/home_page_widget.dart';
@@ -42,9 +43,12 @@ class _HomeScreenState extends State<HomeScreen> {
     switch (index) {
       case 0:
         return RefreshIndicator(
-            onRefresh: () => context
+            onRefresh: () {
+              offset = 0;              
+              return context
                 .read<FoodRecipeSearchLogicCubit>()
-                .getFoodRecipeSearch(context),
+                .getFoodRecipeSearch(context);
+            },
             child: const HomePageWidget());
       case 1:
         return const Center(child: Text('Saved page'));

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
@@ -7,26 +8,25 @@ import '../../../../core/constant/api_constants.dart';
 import '../../../../core/exceptions/exceptions.dart';
 import '../../../../core/header_provider/header_provider.dart';
 import '../../../../core/resources/error_msg_res.dart';
-import '../model/food_recipe_search_response.dart';
+import '../model/get_recipe_information_response.dart';
 
-abstract class FoodRecipeSearchRemote {
-  Future<FoodRecipeSearchResponseModel> foodRecipeSearch(
-      String query, int offset);
+abstract class GetRecipeInformationRemote {
+  Future<GetRecipeInformationResponseModel> getRecipeDetailInformation(int id);
 }
 
-class FoodRecipeSearchRemoteImpl implements FoodRecipeSearchRemote {
-  static const foodRecipeSearchEndpoint =
-      '${ApiConstants.baseApiUrl}${ApiConstants.commonExtUrl}${ApiConstants.searchUrl}';
+class GetRecipeInformationRemoteImpl implements GetRecipeInformationRemote {
+  static const getRecipeInformationEndpoint =
+      '${ApiConstants.baseApiUrl}${ApiConstants.commonExtUrl}';
 
   final HeaderProvider _headerProvider;
 
-  FoodRecipeSearchRemoteImpl(this._headerProvider);
+  GetRecipeInformationRemoteImpl(this._headerProvider);
 
   @override
-  Future<FoodRecipeSearchResponseModel> foodRecipeSearch(
-      String query, int offset) async {
-    final url =
-        Uri.parse('$foodRecipeSearchEndpoint?query=$query&offset=$offset');
+  Future<GetRecipeInformationResponseModel> getRecipeDetailInformation(
+      int id) async {
+    final url = Uri.parse(
+        '$getRecipeInformationEndpoint/$id${ApiConstants.detailsUrl}');
 
     final headers = _headerProvider();
 
@@ -38,13 +38,14 @@ class FoodRecipeSearchRemoteImpl implements FoodRecipeSearchRemote {
     }
   }
 
-  FoodRecipeSearchResponseModel _handleResponse(http.Response response) {
+  GetRecipeInformationResponseModel _handleResponse(http.Response response) {
     final statusCode = response.statusCode;
     final jsonBody = jsonDecode(response.body);
-  
+
+    log(json.encode(jsonBody));
 
     if (statusCode == HttpStatus.ok) {
-      return FoodRecipeSearchResponseModel.fromJson(jsonBody);
+      return GetRecipeInformationResponseModel.fromJson(jsonBody);
     }
 
     final errorMessage = _getErrorMsgForStatusCode(statusCode);

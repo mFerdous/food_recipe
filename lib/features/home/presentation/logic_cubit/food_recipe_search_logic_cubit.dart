@@ -4,7 +4,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../core/utils/nums.dart';
 import '../../data/model/food_recipe_search_response.dart';
+import '../../data/model/get_recipe_information_response.dart';
 import '../cubit/food_recipe_search_cubit.dart';
+import '../cubit/get_recipe_information_cubit.dart';
 
 part 'food_recipe_search_logic_state.dart';
 
@@ -33,6 +35,11 @@ class FoodRecipeSearchLogicCubit extends Cubit<FoodRecipeSearchLogicState> {
         .getFoodRecipeSearch(state.query ?? '', offset);
   }
 
+  Future<void> getRecipeInformation(context, int id) async {
+    await BlocProvider.of<GetRecipeInformationCubit>(context)
+        .getGetRecipeInformation(id);
+  }
+
   void addFoodRecipeSearchResult(List<Result> newResults) {
     emit(state.copyWith(results: newResults));
   }
@@ -41,7 +48,6 @@ class FoodRecipeSearchLogicCubit extends Cubit<FoodRecipeSearchLogicState> {
     final results = List<Result>.from(state.results);
 
     results.addAll(newResults);
-
 
     emit(state.copyWith(results: results));
   }
