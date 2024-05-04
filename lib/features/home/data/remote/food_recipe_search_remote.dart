@@ -1,6 +1,6 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
+
 import 'package:http/http.dart' as http;
 
 import '../../../../core/constant/api_constants.dart';
@@ -28,7 +28,6 @@ class FoodRecipeSearchRemoteImpl implements FoodRecipeSearchRemote {
     final url =
         Uri.parse('$foodRecipeSearchEndpoint?query=$query&offset=$offset');
 
-    log('$url');
     final headers = _headerProvider();
 
     try {
@@ -42,8 +41,7 @@ class FoodRecipeSearchRemoteImpl implements FoodRecipeSearchRemote {
   FoodRecipeSearchResponseModel _handleResponse(http.Response response) {
     final statusCode = response.statusCode;
     final jsonBody = jsonDecode(response.body);
-    log('$statusCode');
-    log('$jsonBody');
+  
 
     if (statusCode == HttpStatus.ok) {
       return FoodRecipeSearchResponseModel.fromJson(jsonBody);

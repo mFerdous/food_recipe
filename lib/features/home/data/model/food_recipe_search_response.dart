@@ -1,11 +1,3 @@
-import 'dart:convert';
-
-FoodRecipeSearchResponseModel foodRecipeSearchResponseModelFromJson(String str) =>
-    FoodRecipeSearchResponseModel.fromJson(json.decode(str));
-
-String foodRecipeSearchResponseModelToJson(FoodRecipeSearchResponseModel data) =>
-    json.encode(data.toJson());
-
 class FoodRecipeSearchResponseModel {
   final List<Result>? results;
   final int? offset;
@@ -29,15 +21,6 @@ class FoodRecipeSearchResponseModel {
         number: json["number"],
         totalResults: json["totalResults"],
       );
-
-  Map<String, dynamic> toJson() => {
-        "results": results == null
-            ? []
-            : List<dynamic>.from(results!.map((x) => x.toJson())),
-        "offset": offset,
-        "number": number,
-        "totalResults": totalResults,
-      };
 }
 
 class Result {
@@ -59,11 +42,4 @@ class Result {
         image: json["image"],
         imageType: json["imageType"],
       );
-
-  Map<String, dynamic> toJson() => {
-        "id": id,
-        "title": title,
-        "image": image,
-        "imageType": imageType,
-      };
 }

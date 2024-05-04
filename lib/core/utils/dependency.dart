@@ -10,10 +10,16 @@ import '../../features/common/presentation/cubit/locale/locale_cubit.dart';
 import '../../features/common/data/data_source/local/locale_source.dart';
 import '../../features/common/data/data_source/local/token_source.dart';
 import '../../features/home/data/remote/food_recipe_search_remote.dart';
+import '../../features/home/data/remote/get_recipe_information_remote.dart';
 import '../../features/home/data/repository_impl/food_recipe_search_repository_impl.dart';
+import '../../features/home/data/repository_impl/get_recipe_information_repository_impl.dart';
 import '../../features/home/domain/repository/food_recipe_search_repository.dart';
+import '../../features/home/domain/repository/get_recipe_information_repository.dart';
 import '../../features/home/domain/usecase/food_recipe_search_usecase.dart';
+import '../../features/home/domain/usecase/get_recipe_information_usecase.dart';
 import '../../features/home/presentation/cubit/food_recipe_search_cubit.dart';
+import '../../features/home/presentation/cubit/get_recipe_information_cubit.dart';
+import '../../features/home/presentation/logic_cubit/food_recipe_detail_logic_cubit.dart';
 import '../../features/home/presentation/logic_cubit/food_recipe_search_logic_cubit.dart';
 import '../header_provider/header_provider.dart';
 
@@ -50,7 +56,7 @@ class Dependency {
 
 
 
-//---------------------------Sign In Start-------------------------------//
+//---------------------------Find Recipe Start-------------------------------//
 
     sl.registerLazySingleton<FoodRecipeSearchRemote>(
       () => FoodRecipeSearchRemoteImpl(sl<AuthKeyHeaderProviderImpl>()),
@@ -66,7 +72,26 @@ class Dependency {
     sl.registerFactory(() => FoodRecipeSearchCubit(foodRecipeSearchUsecase: sl()));
     sl.registerFactory(() => FoodRecipeSearchLogicCubit());
 
-//---------------------------Sign In End-------------------------------//
+//---------------------------Find Recipe End-------------------------------//
+
+//---------------------------Get Recipe Information Start-------------------------------//
+
+    sl.registerLazySingleton<GetRecipeInformationRemote>(
+      () => GetRecipeInformationRemoteImpl(sl<AuthKeyHeaderProviderImpl>()),
+    );
+
+    sl.registerLazySingleton<GetRecipeInformationRepository>(
+      () => GetRecipeInformationRepositoryImpl(
+        sl(),
+        sl(),
+      ),
+    );
+    sl.registerLazySingleton(() => GetRecipeInformationUsecase(sl()));
+    sl.registerFactory(() => GetRecipeInformationCubit(getRecipeInformationUsecase: sl()));
+    sl.registerFactory(() => FoodRecipeDetailLogicCubit());
+
+
+//---------------------------Get Recipe Information End-------------------------------//
   }
 
   static final providers = <BlocProvider>[
@@ -78,6 +103,12 @@ class Dependency {
     ),
     BlocProvider<FoodRecipeSearchLogicCubit>(
       create: (context) => Dependency.sl<FoodRecipeSearchLogicCubit>(),
+    ),
+    BlocProvider<GetRecipeInformationCubit>(
+      create: (context) => Dependency.sl<GetRecipeInformationCubit>(),
+    ),
+    BlocProvider<FoodRecipeDetailLogicCubit>(
+      create: (context) => Dependency.sl<FoodRecipeDetailLogicCubit>(),
     ),
   ];
 }

@@ -3,42 +3,42 @@ part of 'food_recipe_search_logic_cubit.dart';
 
 class FoodRecipeSearchLogicState extends Equatable {
   final String? query;
-  final int? offset;
   final List<Result> results;
   final int selectedIndex;
   final List<String>? bookmarkList;
+  final List<GetRecipeInformationResponseModel>? model;
 
   const FoodRecipeSearchLogicState({
     this.query,
-    this.offset,
     required this.results,
     this.selectedIndex = 0,
     this.bookmarkList,
+    this.model,
   });
 
   FoodRecipeSearchLogicState copyWith({
     final String? query,
-    final int? offset,
     final List<Result>? results,
     final int? selectedIndex,
     final List<String>? bookmarkList,
+    final List<GetRecipeInformationResponseModel>? model,
   }) {
     return FoodRecipeSearchLogicState(
       query: query ?? this.query,
-      offset: offset ?? this.offset,
       results: results ?? this.results,
       selectedIndex: selectedIndex ?? this.selectedIndex,
       bookmarkList: bookmarkList ?? this.bookmarkList,
+      model: model ?? model,
     );
   }
 
   @override
   List<Object?> get props => [
         query,
-        offset,
         results,
         selectedIndex,
         bookmarkList,
+        model,
       ];
 }
 
