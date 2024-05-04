@@ -30,7 +30,6 @@ class HomePageWidget extends StatefulWidget {
 
 class _HomePageWidgetState extends State<HomePageWidget> {
   final controller = ScrollController();
-  List<int> minutes = [];
 
   @override
   void initState() {
@@ -116,7 +115,6 @@ class _HomePageWidgetState extends State<HomePageWidget> {
               );
             } else if (detailState is GetRecipeInformationSucceed) {
               final model = detailState.model;
-              minutes.add(model.cookingMinutes!);
               context
                   .read<FoodRecipeDetailLogicCubit>()
                   .recipeDetailInformationResult(model);

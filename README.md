@@ -57,5 +57,5 @@ The source code for this project is hosted on GitHub. You can access the reposit
 ![Search Bar](screenshots/search_bar.JPEG)
 ![Search Result](screenshots/search_results.JPEG)
 ![Bookmark](screenshots/search_results_bookmark.JPEG)
-![Detail Screen](screenshots/detail.JPEG)
+![Detail Screen](screenshots/details.JPEG)
 
