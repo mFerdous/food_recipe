@@ -6,7 +6,6 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:food_recipe/core/navigation/route_name.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -16,9 +15,9 @@ import '../../../../core/resources/error_msg_res.dart';
 import '../../../../core/utils/nums.dart';
 import '../../../common/presentation/widgets/app_dialog.dart';
 import '../../../common/presentation/widgets/app_text_field_with_icon.dart';
+import '../../data/model/get_recipe_information_response.dart';
 import '../cubit/food_recipe_search_cubit.dart';
 import '../cubit/get_recipe_information_cubit.dart';
-import '../logic_cubit/food_recipe_detail_logic_cubit.dart';
 import '../logic_cubit/food_recipe_search_logic_cubit.dart';
 
 class HomePageWidget extends StatefulWidget {
@@ -30,6 +29,7 @@ class HomePageWidget extends StatefulWidget {
 
 class _HomePageWidgetState extends State<HomePageWidget> {
   final controller = ScrollController();
+  List<GetRecipeInformationResponseModel> dList = [];
 
   @override
   void initState() {
@@ -84,6 +84,10 @@ class _HomePageWidgetState extends State<HomePageWidget> {
               context
                   .read<FoodRecipeSearchLogicCubit>()
                   .initialBookmark(listValue ?? []);
+              for (var i in nItems) {
+                await BlocProvider.of<GetRecipeInformationCubit>(context)
+                    .getGetRecipeInformation(i.id!);
+              }
             } else if (state is FoodRecipeSearchFailed) {
               // Navigator.pop(context);
               final ex = state.exception;
@@ -114,11 +118,16 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                 ),
               );
             } else if (detailState is GetRecipeInformationSucceed) {
+              log('message');
+
               final model = detailState.model;
-              context
-                  .read<FoodRecipeDetailLogicCubit>()
-                  .recipeDetailInformationResult(model);
-              Navigator.pushNamed(context, RouteName.recipeInformation);
+              dList.add(model);
+              setState(() {
+              });
+              // context
+              //     .read<FoodRecipeDetailLogicCubit>()
+              //     .recipeDetailInformationResult(model);
+              // Navigator.pushNamed(context, RouteName.recipeInformation);
             } else if (detailState is GetRecipeInformationFailed) {
               // Navigator.pop(context);
               final ex = detailState.exception;
@@ -334,7 +343,9 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                                                 ),
                                               ),
                                               Text(
-                                                '15 min',
+                                                dList.length != items.length
+                                                    ? ' min'
+                                                    : '${dList[index].readyInMinutes} min',
                                                 style: GoogleFonts.getFont(
                                                   'Poppins',
                                                   fontWeight: FontWeight.w400,
@@ -349,91 +360,113 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                                       ],
                                     ),
                                   ),
-                                  Align(
-                                    alignment: Alignment.topLeft,
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Container(
-                                          margin: const EdgeInsets.fromLTRB(
-                                              0, 0, 8.5, 0),
-                                          child: Text(
-                                            '1 egg',
-                                            style: GoogleFonts.getFont(
-                                              'Poppins',
-                                              fontWeight: FontWeight.w300,
-                                              fontSize: 14,
-                                              color: const Color(0xFF3A3A3B),
-                                            ),
+                                  dList.length != items.length
+                                      ? const SizedBox()
+                                      : Align(
+                                          alignment: Alignment.topLeft,
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Expanded(
+                                                child: Container(
+                                                  margin:
+                                                      const EdgeInsets.fromLTRB(
+                                                          0, 0, 8.5, 0),
+                                                  child: Text(
+                                                    '${dList[index].extendedIngredients![0].amount!.toInt()}-${dList[index].extendedIngredients![0].name}',
+                                                    style: GoogleFonts.getFont(
+                                                      'Poppins',
+                                                      fontWeight:
+                                                          FontWeight.w300,
+                                                      fontSize: 12,
+                                                      color: const Color(
+                                                          0xFF3A3A3B),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              Container(
+                                                margin:
+                                                    const EdgeInsets.fromLTRB(
+                                                        0, 3.5, 6, 3.5),
+                                                child: Container(
+                                                  decoration:
+                                                      const BoxDecoration(
+                                                    color: Color(0xFF2EACAA),
+                                                  ),
+                                                  child: const SizedBox(
+                                                    width: 2,
+                                                    height: 14,
+                                                  ),
+                                                ),
+                                              ),
+                                              Expanded(
+                                                child: Container(
+                                                  margin:
+                                                      const EdgeInsets.fromLTRB(
+                                                          0, 0, 8.5, 0),
+                                                  child: Text(
+                                                    '${dList[index].extendedIngredients![1].amount!.toInt()}-${dList[index].extendedIngredients![1].name}',
+                                                    style: GoogleFonts.getFont(
+                                                      'Poppins',
+                                                      fontWeight:
+                                                          FontWeight.w300,
+                                                      fontSize: 12,
+                                                      color: const Color(
+                                                          0xFF3A3A3B),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              Container(
+                                                margin:
+                                                    const EdgeInsets.fromLTRB(
+                                                        0, 3.5, 6, 3.5),
+                                                child: Container(
+                                                  decoration:
+                                                      const BoxDecoration(
+                                                    color: Color(0xFF2EACAA),
+                                                  ),
+                                                  child: const SizedBox(
+                                                    width: 2,
+                                                    height: 14,
+                                                  ),
+                                                ),
+                                              ),
+                                              Expanded(
+                                                child: Container(
+                                                  margin:
+                                                      const EdgeInsets.fromLTRB(
+                                                          0, 0, 8.5, 0),
+                                                  child: Text(
+                                                    '${dList[index].extendedIngredients![2].amount!.toInt()}-${dList[index].extendedIngredients![2].name}',
+                                                    style: GoogleFonts.getFont(
+                                                      'Poppins',
+                                                      fontWeight:
+                                                          FontWeight.w300,
+                                                      fontSize: 12,
+                                                      color: const Color(
+                                                          0xFF3A3A3B),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              Text(
+                                                'etc.',
+                                                style: GoogleFonts.getFont(
+                                                  'Poppins',
+                                                  fontWeight: FontWeight.w300,
+                                                  fontSize: 14,
+                                                  color:
+                                                      const Color(0xFF3A3A3B),
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ),
-                                        Container(
-                                          margin: const EdgeInsets.fromLTRB(
-                                              0, 3.5, 6, 3.5),
-                                          child: Container(
-                                            decoration: const BoxDecoration(
-                                              color: Color(0xFF2EACAA),
-                                            ),
-                                            child: const SizedBox(
-                                              width: 2,
-                                              height: 14,
-                                            ),
-                                          ),
-                                        ),
-                                        Container(
-                                          margin: const EdgeInsets.fromLTRB(
-                                              0, 0, 8.5, 0),
-                                          child: Text(
-                                            '1 avocado',
-                                            style: GoogleFonts.getFont(
-                                              'Poppins',
-                                              fontWeight: FontWeight.w300,
-                                              fontSize: 14,
-                                              color: const Color(0xFF3A3A3B),
-                                            ),
-                                          ),
-                                        ),
-                                        Container(
-                                          margin: const EdgeInsets.fromLTRB(
-                                              0, 3.5, 6, 3.5),
-                                          child: Container(
-                                            decoration: const BoxDecoration(
-                                              color: Color(0xFF2EACAA),
-                                            ),
-                                            child: const SizedBox(
-                                              width: 2,
-                                              height: 14,
-                                            ),
-                                          ),
-                                        ),
-                                        Container(
-                                          margin: const EdgeInsets.fromLTRB(
-                                              0, 0, 8.5, 0),
-                                          child: Text(
-                                            '1 toast',
-                                            style: GoogleFonts.getFont(
-                                              'Poppins',
-                                              fontWeight: FontWeight.w300,
-                                              fontSize: 14,
-                                              color: const Color(0xFF3A3A3B),
-                                            ),
-                                          ),
-                                        ),
-                                        Text(
-                                          'etc.',
-                                          style: GoogleFonts.getFont(
-                                            'Poppins',
-                                            fontWeight: FontWeight.w300,
-                                            fontSize: 14,
-                                            color: const Color(0xFF3A3A3B),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
                                 ],
                               ),
                             ),
