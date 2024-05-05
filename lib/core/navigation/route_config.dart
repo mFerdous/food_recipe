@@ -34,7 +34,7 @@ class RouteConfig {
   }
 
   static MaterialPageRoute _getRecipeInformationRoute() {
-    return _routeBuilder(const RecipeInformationWidget());
+    return _routeBuilder(const HomeScreen());
     // return _routeBuilder(const SplashScreen());
   }
 }

@@ -11,6 +11,7 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../core/exceptions/exceptions.dart';
+import '../../../../core/navigation/route_name.dart';
 import '../../../../core/resources/error_msg_res.dart';
 import '../../../../core/utils/nums.dart';
 import '../../../common/presentation/widgets/app_dialog.dart';
@@ -19,6 +20,7 @@ import '../../data/model/get_recipe_information_response.dart';
 import '../cubit/food_recipe_search_cubit.dart';
 import '../cubit/get_recipe_information_cubit.dart';
 import '../logic_cubit/food_recipe_search_logic_cubit.dart';
+import 'recipe_information_widget.dart';
 
 class HomePageWidget extends StatefulWidget {
   const HomePageWidget({super.key});
@@ -122,8 +124,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
 
               final model = detailState.model;
               dList.add(model);
-              setState(() {
-              });
+              setState(() {});
               // context
               //     .read<FoodRecipeDetailLogicCubit>()
               //     .recipeDetailInformationResult(model);
@@ -205,9 +206,15 @@ class _HomePageWidgetState extends State<HomePageWidget> {
               if (index < items.length) {
                 return GestureDetector(
                   onTap: () {
-                    context
-                        .read<FoodRecipeSearchLogicCubit>()
-                        .getRecipeInformation(context, items[index].id!);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            RecipeInformationWidget(detail: dList[index]),
+                      ),
+                    );
+
+                    // Navigator.pushNamed(context, RouteName.recipeInformation);
                   },
                   child: Container(
                     margin: const EdgeInsets.fromLTRB(0, 0, 0, 16),
