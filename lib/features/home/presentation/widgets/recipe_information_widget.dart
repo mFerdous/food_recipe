@@ -1,60 +1,61 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:google_fonts/google_fonts.dart';
-
 import 'package:food_recipe/features/home/presentation/logic_cubit/food_recipe_detail_logic_cubit.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../data/model/get_recipe_information_response.dart';
 
 class RecipeInformationWidget extends StatelessWidget {
-  final GetRecipeInformationResponseModel detail;
-  const RecipeInformationWidget({
-    super.key,
-    required this.detail,
-  });
+  const RecipeInformationWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        clipBehavior: Clip.antiAlias,
-        fit: StackFit.expand,
-        children: [
-          Positioned(
-            left: 0,
-            right: 0,
-            top: 0,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: Image.network(
-                detail.image!,
-                fit: BoxFit.cover,
+    return BlocBuilder<FoodRecipeDetailLogicCubit, FoodRecipeDetailLogicState>(
+      builder: (context, state) {
+        final detail = state.model;
+        final stepList = detail!.analyzedInstructions ?? [];
+
+        return Scaffold(
+          body: Stack(
+            clipBehavior: Clip.antiAlias,
+            fit: StackFit.expand,
+            children: [
+              Positioned(
+                left: 0,
+                right: 0,
+                top: 0,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Image.network(
+                    detail.image!,
+                    fit: BoxFit.cover,
+                  ),
+                ),
               ),
-            ),
+              Positioned(
+                top: 30,
+                left: 15,
+                child: GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: _buildIconContainer('assets/vectors/vector_5_x2.svg'),
+                ),
+              ),
+              Positioned(
+                top: 30,
+                right: 15,
+                child: _buildIconContainer('assets/vectors/vector_2_x2.svg'),
+              ),
+              Positioned(
+                left: 0,
+                right: 0,
+                top: 180,
+                child: _buildContentContainer(detail, stepList),
+              ),
+            ],
           ),
-          Positioned(
-            top: 30,
-            left: 15,
-            child: GestureDetector(
-              onTap: () => Navigator.pop(context),
-              child: _buildIconContainer('assets/vectors/vector_5_x2.svg'),
-            ),
-          ),
-          Positioned(
-            top: 30,
-            right: 15,
-            child: _buildIconContainer('assets/vectors/vector_2_x2.svg'),
-          ),
-          Positioned(
-            left: 0,
-            right: 0,
-            top: 180,
-            child: _buildContentContainer(detail),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -71,9 +72,8 @@ class RecipeInformationWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildContentContainer(
-    GetRecipeInformationResponseModel detail,
-  ) {
+  Widget _buildContentContainer(GetRecipeInformationResponseModel detail,
+      List<AnalyzedInstruction>? stepList) {
     return Container(
       margin: const EdgeInsets.fromLTRB(15, 0, 15, 0),
       decoration: BoxDecoration(
@@ -135,7 +135,7 @@ class RecipeInformationWidget extends StatelessWidget {
               ],
             ),
             _buildIngredientList(detail.extendedIngredients),
-            _buildStepList(detail),
+            _buildStepList(detail, stepList),
           ],
         ),
       ),
@@ -174,19 +174,19 @@ class RecipeInformationWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildStepList(GetRecipeInformationResponseModel detail) {
+  Widget _buildStepList(GetRecipeInformationResponseModel detail,
+      List<AnalyzedInstruction>? stepList) {
     return Container(
       height: 300,
       margin: const EdgeInsets.fromLTRB(0, 3.5, 6, 3.5),
-      child: detail.analyzedInstructions != null &&
-              detail.analyzedInstructions!.isNotEmpty
+      child: stepList != null && stepList.isNotEmpty
           ? ListView.separated(
-              itemCount: detail.analyzedInstructions![0].steps!.length,
+              itemCount: stepList[0].steps!.length,
               separatorBuilder: (context, index) => const SizedBox(
                 height: 10,
               ),
               itemBuilder: (context, index) {
-                final step = detail.analyzedInstructions![0].steps![index];
+                final step = stepList[0].steps![index];
                 return Column(
                   children: [
                     Align(
