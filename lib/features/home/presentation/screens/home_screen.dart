@@ -4,6 +4,7 @@ import 'package:food_recipe/core/utils/nums.dart';
 
 import '../logic_cubit/food_recipe_search_logic_cubit.dart';
 import '../widgets/home_page_widget.dart';
+import '../widgets/saved_page_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -51,7 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
             },
             child: const HomePageWidget());
       case 1:
-        return const Center(child: Text('Saved page'));
+        return SavedPageWidget();
       default:
         return Container();
     }

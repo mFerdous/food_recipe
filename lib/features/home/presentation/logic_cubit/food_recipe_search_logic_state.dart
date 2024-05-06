@@ -4,6 +4,7 @@ part of 'food_recipe_search_logic_cubit.dart';
 class FoodRecipeSearchLogicState extends Equatable {
   final String? query;
   final List<Result> results;
+  final List<Result> offlineResults;
   final int selectedIndex;
   final List<String>? bookmarkList;
   final List<GetRecipeInformationResponseModel>? model;
@@ -11,6 +12,7 @@ class FoodRecipeSearchLogicState extends Equatable {
   const FoodRecipeSearchLogicState({
     this.query,
     required this.results,
+    required this.offlineResults,
     this.selectedIndex = 0,
     this.bookmarkList,
     this.model,
@@ -19,6 +21,7 @@ class FoodRecipeSearchLogicState extends Equatable {
   FoodRecipeSearchLogicState copyWith({
     final String? query,
     final List<Result>? results,
+    final List<Result>? offlineResults,
     final int? selectedIndex,
     final List<String>? bookmarkList,
     final List<GetRecipeInformationResponseModel>? model,
@@ -26,6 +29,7 @@ class FoodRecipeSearchLogicState extends Equatable {
     return FoodRecipeSearchLogicState(
       query: query ?? this.query,
       results: results ?? this.results,
+      offlineResults: offlineResults ?? this.offlineResults,
       selectedIndex: selectedIndex ?? this.selectedIndex,
       bookmarkList: bookmarkList ?? this.bookmarkList,
       model: model ?? model,
@@ -36,6 +40,7 @@ class FoodRecipeSearchLogicState extends Equatable {
   List<Object?> get props => [
         query,
         results,
+        offlineResults,
         selectedIndex,
         bookmarkList,
         model,
@@ -43,5 +48,5 @@ class FoodRecipeSearchLogicState extends Equatable {
 }
 
 class FoodRecipeSearchLogicInitial extends FoodRecipeSearchLogicState {
-  const FoodRecipeSearchLogicInitial({required super.results});
+  const FoodRecipeSearchLogicInitial({required super.results, required super.offlineResults});
 }

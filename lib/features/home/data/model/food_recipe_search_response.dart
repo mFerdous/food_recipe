@@ -42,4 +42,24 @@ class Result {
         image: json["image"],
         imageType: json["imageType"],
       );
+
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'title': title,
+      'image': image,
+      'imageType': imageType
+    };
+  }
+
+  factory Result.fromMap(Map<String, dynamic> map) {
+    return Result(
+      id: map['id'],
+      title: map['title'],
+      image: map['image'],
+      imageType: map['imageType']
+    );
+  }
+
 }

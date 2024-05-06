@@ -7,22 +7,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:food_recipe/core/navigation/route_name.dart';
+import 'package:food_recipe/features/home/data/model/food_recipe_search_response.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../core/exceptions/exceptions.dart';
-import '../../../../core/navigation/route_name.dart';
 import '../../../../core/resources/error_msg_res.dart';
 import '../../../../core/utils/nums.dart';
 import '../../../common/presentation/widgets/app_dialog.dart';
 import '../../../common/presentation/widgets/app_text_field_with_icon.dart';
-import '../../data/model/get_recipe_information_response.dart';
+import '../../data/database/database_helper.dart';
 import '../cubit/food_recipe_search_cubit.dart';
 import '../cubit/get_recipe_information_cubit.dart';
 import '../logic_cubit/food_recipe_detail_logic_cubit.dart';
 import '../logic_cubit/food_recipe_search_logic_cubit.dart';
-import 'recipe_information_widget.dart';
 
 class HomePageWidget extends StatefulWidget {
   const HomePageWidget({super.key});
@@ -33,6 +32,29 @@ class HomePageWidget extends StatefulWidget {
 
 class _HomePageWidgetState extends State<HomePageWidget> {
   final controller = ScrollController();
+  DatabaseHelper databaseHelper = DatabaseHelper.instance;
+
+  insertDB(id, title, image, imageType) async {
+
+    final checkId = await databaseHelper.isIdAlreadyInserted(id);
+    
+    if(checkId == false){
+
+      final results = Result(
+        id: id, 
+        title: title, 
+        image: image, 
+        imageType: imageType
+      );
+
+    await databaseHelper.insertResult(results);
+
+    } else {
+
+     await databaseHelper.deleteResultById(id);
+
+    }
+  }
 
   @override
   void initState() {
@@ -234,6 +256,9 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                                 context
                                     .read<FoodRecipeSearchLogicCubit>()
                                     .changeBookmark(items[index].id!);
+
+                                insertDB(items[index].id, items[index].title,
+                                    items[index].image, items[index].imageType);
                               },
                               child: Container(
                                 decoration: BoxDecoration(

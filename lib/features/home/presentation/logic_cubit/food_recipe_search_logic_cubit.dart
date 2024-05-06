@@ -12,10 +12,10 @@ part 'food_recipe_search_logic_state.dart';
 
 class FoodRecipeSearchLogicCubit extends Cubit<FoodRecipeSearchLogicState> {
   FoodRecipeSearchLogicCubit()
-      : super(const FoodRecipeSearchLogicInitial(results: []));
+      : super(const FoodRecipeSearchLogicInitial(results: [], offlineResults: []));
 
   void clearFoodRecipeSearchState() {
-    emit(const FoodRecipeSearchLogicInitial(results: []));
+    emit(const FoodRecipeSearchLogicInitial(results: [], offlineResults: []));
   }
 
   void changeSelectedIndex(int selectedIndex) {
@@ -72,5 +72,14 @@ class FoodRecipeSearchLogicCubit extends Cubit<FoodRecipeSearchLogicState> {
     emit(
       state.copyWith(bookmarkList: bookmarkList),
     );
+  }
+
+
+
+  Future<void> offlineResultList(List<Result> results) async {
+    final updatedResultList = <Result>[];
+    updatedResultList.addAll(results);
+    
+    emit(state.copyWith(offlineResults: updatedResultList));
   }
 }
