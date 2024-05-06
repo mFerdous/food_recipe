@@ -1,9 +1,11 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:food_recipe/core/navigation/route_name.dart';
@@ -22,6 +24,7 @@ import '../cubit/food_recipe_search_cubit.dart';
 import '../cubit/get_recipe_information_cubit.dart';
 import '../logic_cubit/food_recipe_detail_logic_cubit.dart';
 import '../logic_cubit/food_recipe_search_logic_cubit.dart';
+import 'package:http/http.dart' as http;
 
 class HomePageWidget extends StatefulWidget {
   const HomePageWidget({super.key});
@@ -35,24 +38,15 @@ class _HomePageWidgetState extends State<HomePageWidget> {
   DatabaseHelper databaseHelper = DatabaseHelper.instance;
 
   insertDB(id, title, image, imageType) async {
-
     final checkId = await databaseHelper.isIdAlreadyInserted(id);
-    
-    if(checkId == false){
 
-      final results = Result(
-        id: id, 
-        title: title, 
-        image: image, 
-        imageType: imageType
-      );
+    if (checkId == false) {
+      final results =
+          Result(id: id, title: title, image: image, imageType: imageType);
 
-    await databaseHelper.insertResult(results);
-
+      await databaseHelper.insertResult(results);
     } else {
-
-     await databaseHelper.deleteResultById(id);
-
+      await databaseHelper.deleteResultById(id);
     }
   }
 
@@ -77,6 +71,24 @@ class _HomePageWidgetState extends State<HomePageWidget> {
 
   Future<void> fetch() async {
     context.read<FoodRecipeSearchLogicCubit>().getFoodRecipeSearch(context);
+  }
+
+  Future<Map<String, dynamic>> fetchData(id) async {
+    final response = await http.get(
+      Uri.parse(
+          'https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/$id/information'),
+      headers: {
+        'X-RapidAPI-Key': '1a2bd7d529msh513ba3b70195a79p1acf77jsned01ab52cffa',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      // If the call to the server was successful, parse the JSON
+      return json.decode(response.body);
+    } else {
+      // If that call was not successful, throw an error.
+      throw Exception('Failed to load data');
+    }
   }
 
   @override
@@ -330,137 +342,154 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                                             ),
                                           ),
                                         ),
-                                        Container(
-                                          margin: const EdgeInsets.fromLTRB(
-                                              0, 2, 0, 1),
+                                      ],
+                                    ),
+                                  ),
+                                  FutureBuilder(
+                                    future: fetchData(items[index].id),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState ==
+                                          ConnectionState.waiting) {
+                                        return CircularProgressIndicator();
+                                      } else if (snapshot.hasError) {
+                                        return Text('Error: ${snapshot.error}');
+                                      } else {
+                                        List<dynamic> extendedIngredients =
+                                            snapshot
+                                                .data!['extendedIngredients'];
+
+                                        return Align(
+                                          alignment: Alignment.topLeft,
                                           child: Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.start,
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
-                                              Container(
-                                                margin:
-                                                    const EdgeInsets.fromLTRB(
-                                                        0, 3, 4, 2),
-                                                child: Opacity(
-                                                  opacity: 0.5,
-                                                  child: Container(
-                                                    width: 16,
-                                                    height: 16,
-                                                    padding: const EdgeInsets
-                                                        .fromLTRB(
-                                                        1.3, 1.3, 1.3, 1.3),
-                                                    child: SizedBox(
-                                                      width: 13.3,
-                                                      height: 13.3,
-                                                      child: SvgPicture.asset(
-                                                        'assets/vectors/time.svg',
-                                                      ),
+                                              Expanded(
+                                                child: Container(
+                                                  margin:
+                                                      const EdgeInsets.fromLTRB(
+                                                          0, 0, 8.5, 0),
+                                                  child: Text(
+                                                    '${extendedIngredients[0]['name']}',
+                                                    style: GoogleFonts.getFont(
+                                                      'Poppins',
+                                                      fontWeight:
+                                                          FontWeight.w300,
+                                                      fontSize: 14,
+                                                      color: const Color(
+                                                          0xFF3A3A3B),
                                                     ),
                                                   ),
                                                 ),
                                               ),
-                                              Text(
-                                                '15 min',
-                                                style: GoogleFonts.getFont(
-                                                  'Poppins',
-                                                  fontWeight: FontWeight.w400,
-                                                  fontSize: 14,
-                                                  color:
-                                                      const Color(0xFF3A3A3B),
+                                              Container(
+                                                margin:
+                                                    const EdgeInsets.fromLTRB(
+                                                        0, 3.5, 6, 3.5),
+                                                child: Container(
+                                                  decoration:
+                                                      const BoxDecoration(
+                                                    color: Color(0xFF2EACAA),
+                                                  ),
+                                                  child: const SizedBox(
+                                                    width: 2,
+                                                    height: 14,
+                                                  ),
+                                                ),
+                                              ),
+                                              Expanded(
+                                                child: Container(
+                                                  margin:
+                                                      const EdgeInsets.fromLTRB(
+                                                          0, 0, 8.5, 0),
+                                                  child: Text(
+                                                    '${extendedIngredients[1]['name']}',
+                                                    style: GoogleFonts.getFont(
+                                                      'Poppins',
+                                                      fontWeight:
+                                                          FontWeight.w300,
+                                                      fontSize: 14,
+                                                      color: const Color(
+                                                          0xFF3A3A3B),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              Expanded(
+                                                child: Text(
+                                                  'etc.',
+                                                  style: GoogleFonts.getFont(
+                                                    'Poppins',
+                                                    fontWeight: FontWeight.w300,
+                                                    fontSize: 14,
+                                                    color:
+                                                        const Color(0xFF3A3A3B),
+                                                  ),
+                                                ),
+                                              ),
+                                              Align(
+                                                alignment: Alignment.centerLeft,
+                                                child: Container(
+                                                  margin:
+                                                      const EdgeInsets.fromLTRB(
+                                                          0, 2, 0, 1),
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.start,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Container(
+                                                        margin: const EdgeInsets
+                                                            .fromLTRB(
+                                                            0, 3, 4, 2),
+                                                        child: Opacity(
+                                                          opacity: 0.5,
+                                                          child: Container(
+                                                            width: 16,
+                                                            height: 16,
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .fromLTRB(
+                                                                    1.3,
+                                                                    1.3,
+                                                                    1.3,
+                                                                    1.3),
+                                                            child: SizedBox(
+                                                              width: 13.3,
+                                                              height: 13.3,
+                                                              child: SvgPicture
+                                                                  .asset(
+                                                                'assets/vectors/time.svg',
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      Text(
+                                                        '${snapshot.data!['readyInMinutes']} min',
+                                                        style:
+                                                            GoogleFonts.getFont(
+                                                          'Poppins',
+                                                          fontWeight:
+                                                              FontWeight.w400,
+                                                          fontSize: 14,
+                                                          color: const Color(
+                                                              0xFF3A3A3B),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
                                                 ),
                                               ),
                                             ],
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Align(
-                                    alignment: Alignment.topLeft,
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Container(
-                                          margin: const EdgeInsets.fromLTRB(
-                                              0, 0, 8.5, 0),
-                                          child: Text(
-                                            '1 egg',
-                                            style: GoogleFonts.getFont(
-                                              'Poppins',
-                                              fontWeight: FontWeight.w300,
-                                              fontSize: 14,
-                                              color: const Color(0xFF3A3A3B),
-                                            ),
-                                          ),
-                                        ),
-                                        Container(
-                                          margin: const EdgeInsets.fromLTRB(
-                                              0, 3.5, 6, 3.5),
-                                          child: Container(
-                                            decoration: const BoxDecoration(
-                                              color: Color(0xFF2EACAA),
-                                            ),
-                                            child: const SizedBox(
-                                              width: 2,
-                                              height: 14,
-                                            ),
-                                          ),
-                                        ),
-                                        Container(
-                                          margin: const EdgeInsets.fromLTRB(
-                                              0, 0, 8.5, 0),
-                                          child: Text(
-                                            '1 avocado',
-                                            style: GoogleFonts.getFont(
-                                              'Poppins',
-                                              fontWeight: FontWeight.w300,
-                                              fontSize: 14,
-                                              color: const Color(0xFF3A3A3B),
-                                            ),
-                                          ),
-                                        ),
-                                        Container(
-                                          margin: const EdgeInsets.fromLTRB(
-                                              0, 3.5, 6, 3.5),
-                                          child: Container(
-                                            decoration: const BoxDecoration(
-                                              color: Color(0xFF2EACAA),
-                                            ),
-                                            child: const SizedBox(
-                                              width: 2,
-                                              height: 14,
-                                            ),
-                                          ),
-                                        ),
-                                        Container(
-                                          margin: const EdgeInsets.fromLTRB(
-                                              0, 0, 8.5, 0),
-                                          child: Text(
-                                            '1 toast',
-                                            style: GoogleFonts.getFont(
-                                              'Poppins',
-                                              fontWeight: FontWeight.w300,
-                                              fontSize: 14,
-                                              color: const Color(0xFF3A3A3B),
-                                            ),
-                                          ),
-                                        ),
-                                        Text(
-                                          'etc.',
-                                          style: GoogleFonts.getFont(
-                                            'Poppins',
-                                            fontWeight: FontWeight.w300,
-                                            fontSize: 14,
-                                            color: const Color(0xFF3A3A3B),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
+                                        );
+                                      }
+                                    },
                                   ),
                                 ],
                               ),
